@@ -1,13 +1,14 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtGuard } from 'src/modules/auth/guards';
+import { LogHttp, RolesGuard } from '@app/common';
+
 import { getConfig } from './config';
 
 // Modules
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule, DrizzleModule, UsersModule } from './modules';
-import { LogHttp } from '@app/common';
 
 @Module({
   imports: [
@@ -20,7 +21,10 @@ import { LogHttp } from '@app/common';
     AuthModule,
     UsersModule,
   ],
-  providers: [{ provide: APP_GUARD, useClass: JwtGuard }],
+  providers: [
+    { provide: APP_GUARD, useClass: JwtGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

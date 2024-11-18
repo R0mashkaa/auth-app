@@ -1,6 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { RolesEnum } from '@app/modules/users/enums';
+import { rolesEnum } from '@app/schemas';
 
 export class UsersDto {
   @ApiProperty({ example: 'Jon' })
@@ -14,6 +16,12 @@ export class UsersDto {
   @IsString()
   @Expose()
   lastName: string;
+
+  @ApiProperty({ example: RolesEnum.USER })
+  @IsString()
+  @IsEnum(RolesEnum)
+  @Expose()
+  role: string;
 
   @ApiProperty({ example: 'example@mail.com' })
   @IsNotEmpty()

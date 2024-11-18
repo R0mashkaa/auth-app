@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/commo
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiJwtPayload, GetUser, LoggerApi, Public } from 'src/common';
 import { AuthService } from './auth.service';
-import { AuthResponse, SignInDto, SignUpDto } from './dto';
+import { AuthResponse, PasswordUpdate, SignInDto, SignUpDto } from './dto';
 import { UsersResponse } from '@app/modules';
 
 @Controller('auth')
@@ -30,9 +30,21 @@ export class AuthController {
   }
 
   @ApiBearerAuth()
+  @Post('changePassword')
+  @ApiOperation({ summary: '[ChangePassword]', description: 'Change user password' })
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ type: AuthResponse })
+  async changePassword(
+    @Body() data: PasswordUpdate,
+    @GetUser() user: ApiJwtPayload,
+  ): Promise<object> {
+    return await this.authService.changePassword(data, user.id);
+  }
+
+  @ApiBearerAuth()
   @Get('verify')
   @ApiOperation({ summary: '[VerifyUser]', description: 'Verify user' })
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.OK)
   @ApiResponse({ type: AuthResponse })
   async verify(@GetUser() user: ApiJwtPayload): Promise<UsersResponse> {
     return await this.authService.verify(user.id);

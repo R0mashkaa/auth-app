@@ -2,20 +2,21 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { LoggerServiceDecorator } from 'src/common';
-import { AuthResponse, SignInDto, SignUpDto } from './dto';
-import { UsersResponse, UsersService } from 'src/modules/users';
+import { AuthResponse, PasswordUpdate, SignInDto, SignUpDto } from './dto';
+import { UsersResponse } from 'src/modules/users';
+import { UsersRepository } from '@app/modules';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
+    private usersRepository: UsersRepository,
     private jwtService: JwtService,
   ) {}
 
   @LoggerServiceDecorator()
   async signIn(data: SignInDto): Promise<AuthResponse> {
     try {
-      const existsUser = await this.usersService.findByEmail(data.email);
+      const existsUser = await this.usersRepository.findByEmail(data.email);
 
       if (!existsUser) {
         throw new NotFoundException('User not found');
@@ -30,6 +31,7 @@ export class AuthService {
         id: existsUser.id,
         firstName: existsUser.firstName,
         lastName: existsUser.lastName,
+        role: existsUser.role,
         email: existsUser.email,
       };
 
@@ -46,14 +48,14 @@ export class AuthService {
   @LoggerServiceDecorator()
   async signUp(data: SignUpDto): Promise<AuthResponse> {
     try {
-      const existsUser = await this.usersService.findByEmail(data.email);
+      const existsUser = await this.usersRepository.findByEmail(data.email);
 
       if (existsUser) {
         throw new BadRequestException('User already registered');
       }
 
       const hashedPassword = await bcrypt.hash(data.password, 10);
-      const createdUser = await this.usersService.create({
+      const createdUser = await this.usersRepository.create({
         ...data,
         password: hashedPassword,
       });
@@ -62,11 +64,12 @@ export class AuthService {
         id: createdUser.id,
         firstName: createdUser.firstName,
         lastName: createdUser.lastName,
+        role: existsUser.role,
         email: createdUser.email,
       };
 
       return {
-        ...existsUser,
+        ...createdUser,
         access_token: this.jwtService.sign(payload),
       } as AuthResponse;
     } catch (error) {
@@ -75,9 +78,43 @@ export class AuthService {
   }
 
   @LoggerServiceDecorator()
+  async changePassword(data: PasswordUpdate, userId: string): Promise<object> {
+    try {
+      const { previousPassword, newPassword, confirmNewPassword } = data;
+      const existsUser = await this.usersRepository.findById(userId);
+
+      const isPasswordCorrect = await bcrypt.compare(previousPassword, existsUser.password);
+      if (!isPasswordCorrect) {
+        throw new BadRequestException('Password incorrect');
+      }
+
+      if (newPassword !== confirmNewPassword) {
+        throw new BadRequestException('New password doesn`t matches');
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await this.usersRepository.queryUpdateById(userId, { password: hashedPassword });
+
+      const payload = {
+        id: existsUser.id,
+        firstName: existsUser.firstName,
+        lastName: existsUser.lastName,
+        role: existsUser.role,
+        email: existsUser.email,
+      };
+
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
+    } catch (error) {
+      throw new BadRequestException(`[roleUpdate-Users] error: ${error.message}`);
+    }
+  }
+
+  @LoggerServiceDecorator()
   async verify(userId: string): Promise<UsersResponse> {
     try {
-      const existsUser = await this.usersService.findById(userId);
+      const existsUser = await this.usersRepository.findById(userId);
 
       if (!existsUser) {
         throw new NotFoundException('User not found');

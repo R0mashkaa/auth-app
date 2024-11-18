@@ -2,3 +2,4 @@ export * from './repository';
 export * from './drizzle';
 export * from './auth';
 export * from './users';
+export * from './redis';

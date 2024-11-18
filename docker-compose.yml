@@ -16,11 +16,14 @@ services:
     ports:
       - '8080:8080'
 
-
   redis:
     image: redis:latest
     container_name: redis_db
     restart: unless-stopped
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT=${REDIS_PORT}
     ports:
       - "6379:6379"
 

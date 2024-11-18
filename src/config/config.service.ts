@@ -9,6 +9,10 @@ export const getConfig = () => {
     host: getSafeEnv('HOST'),
     port: getSafeEnv('PORT'),
 
+    redis_host: getSafeEnv('REDIS_HOST'),
+    redis_password: getSafeEnv('REDIS_PASSWORD'),
+    redis_port: Number(getSafeEnv('REDIS_PORT')),
+
     jwt_secret: getSafeEnv('JWT_SECRET'),
     jwt_expires: getSafeEnv('JWT_EXPIRES'),
   };

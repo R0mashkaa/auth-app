@@ -12,11 +12,17 @@ async function bootstrap() {
   const host = getConfig().host;
   const isProduction = getConfig().node_env === 'production';
 
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
   setupCors(app);
 
   const options = new DocumentBuilder()
-    .setTitle('Auth API')
+    .setTitle('Cool API')
     .setDescription('API Gateway')
     .setVersion('0.1')
     .addBearerAuth()

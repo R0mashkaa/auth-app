@@ -3,7 +3,9 @@ import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as schema from 'src/schemas';
 import { DRIZZLE_ORM } from 'src/common/constants';
 import { eq } from 'drizzle-orm';
-import { CreateUserDto } from '@app/modules/users';
+import { CreateUserDto, UpdateMeDto } from '@app/modules/users';
+import { mapToUsersResponse } from '@app/modules/users/mappers';
+import { RolesEnum } from '@app/modules/users/enums';
 
 @Injectable()
 export class UsersRepository {
@@ -19,12 +21,9 @@ export class UsersRepository {
   }
 
   async findAll() {
-    return this.drizzle.query.users.findMany({
-      with: {
-        marketOffersSell: true,
-        marketOffersBuy: true,
-      },
-    });
+    const users = await this.drizzle.query.users.findMany({}).execute();
+
+    return users.map(mapToUsersResponse);
   }
 
   async findById(id: string) {
@@ -41,6 +40,26 @@ export class UsersRepository {
         where: eq(schema.users.email, email),
       })
       .execute();
+  }
+
+  async updateById(id: string, data: UpdateMeDto) {
+    const [{ updatedId }] = await this.drizzle
+      .update(schema.users)
+      .set(data)
+      .where(eq(schema.users.id, id))
+      .returning({ updatedId: schema.users.id });
+
+    return this.findById(updatedId);
+  }
+
+  async queryUpdateById(id: string, data: object) {
+    const [{ updatedId }] = await this.drizzle
+      .update(schema.users)
+      .set(data)
+      .where(eq(schema.users.id, id))
+      .returning({ updatedId: schema.users.id });
+
+    return this.findById(updatedId);
   }
 
   async deleteById(id: string) {
