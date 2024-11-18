@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
-import {getConfig} from "@app/config";
+import { getConfig } from '@app/config';
 
 @Injectable()
 export class RedisService {
@@ -12,6 +12,9 @@ export class RedisService {
       username: getConfig().redis_username,
       password: getConfig().redis_password,
       port: getConfig().redis_port,
+      tls: {
+        rejectUnauthorized: true,
+      },
     });
   }
 
