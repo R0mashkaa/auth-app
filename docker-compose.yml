@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  users:
+    container_name: app_service
+    build:
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - HOST=${HOST}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+      - DATABASE_URI=${DATABASE_URI}
+      - PORT=8080
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES=${JWT_EXPIRES}
+    ports:
+      - '8080:8080'
+
+
+  redis:
+    image: redis:latest
+    container_name: redis_db
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  postgres:
+      image: postgres:16.2
+      container_name: postgres_db
+      restart: always
+      environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=defaultDB
+      logging:
+        options:
+          max-size: 10m
+          max-file: '3'
+      ports:
+        - '5434:5432'
+      volumes:
+        - ./storage/postgres-data:/var/lib/postgresql/data

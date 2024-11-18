@@ -1,0 +1,91 @@
+stages:          # List of stages for jobs, and their order of execution
+  - dependencies
+  - security
+  - test
+  - docker-build
+  - image-scan
+  #- deploy
+
+
+image: node:latest
+
+variables:
+  # from https://storage.googleapis.com/kubernetes-release/release/stable.txt
+  K8S_STABLE_VERSION_URL: https://storage.googleapis.com/kubernetes-release/release/v1.10.4/bin/linux/amd64/kubectl
+
+
+
+npm:
+  stage: dependencies
+  script:
+    - npm -v
+    - npm install
+    - npm i --package-lock-only
+
+  # Cache the `node_modules` folder
+  # using the `npm` suffix on the key.
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-npm
+    paths:
+      - node_modules/
+  #artifacts:
+  #  expire_in: 1 month
+  #  paths:
+  #    - node_modules
+
+npm-audit-fix:
+  stage: security
+  allow_failure: true
+  dependencies:
+    - npm
+  script:
+    - npm -v
+    - npm i --package-lock-only
+    - npm audit fix
+
+include:
+  #- template: Jobs/Build.gitlab-ci.yml
+  - template: Security/Container-Scanning.gitlab-ci.yml
+
+
+##app should start within 10 sec
+test-app-starting:
+  stage: test
+  dependencies:
+    - npm
+  script:
+    - timeout 10 npm start || echo 0
+
+test-app-utests:
+  stage: test
+  allow_failure: true
+  script:
+    - npm test
+  coverage:
+    '/Statements.*?(\d+(?:\.\d+)?)%/'
+
+docker-image:       # build and push docker image
+  stage: docker-build
+  dependencies:
+    - npm
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.0-debug
+    entrypoint: [""]
+  only:
+    - tags
+  except:
+    - branches
+  script:
+    - echo "{\"auths\":{\"https://${DOCKER_REGISTRY_AZ_GIANT_HOST}/v2/\":{\"auth\":\"$(printf "%s:%s" "${DOCKER_REGISTRY_AZ_GIANT_USER}" "${DOCKER_REGISTRY_AZ_GIANT_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+      --destination "${DOCKER_REGISTRY_AZ_GIANT_HOST}/giant.market-be:${CI_COMMIT_TAG}"
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+
+container_scanning:
+  stage: image-scan
+  variables:
+    CS_IMAGE: "${DOCKER_REGISTRY_AZ_GIANT_HOST}/giant.market-be:${CI_COMMIT_TAG}"
+    CS_REGISTRY_USER: "$DOCKER_REGISTRY_AZ_GIANT_USER"
+    CS_REGISTRY_PASSWORD: "$DOCKER_REGISTRY_AZ_GIANT_PASSWORD"
