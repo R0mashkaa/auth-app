@@ -10,6 +10,7 @@ export const getConfig = () => {
     port: getSafeEnv('PORT'),
 
     redis_host: getSafeEnv('REDIS_HOST'),
+    redis_username: getSafeEnv('REDIS_USERNAME'),
     redis_password: getSafeEnv('REDIS_PASSWORD'),
     redis_port: Number(getSafeEnv('REDIS_PORT')),
 

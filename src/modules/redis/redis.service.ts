@@ -9,8 +9,9 @@ export class RedisService {
   constructor() {
     this.redis = new Redis.Redis({
       host: getConfig().redis_host,
-      port: getConfig().redis_port,
+      username: getConfig().redis_username,
       password: getConfig().redis_password,
+      port: getConfig().redis_port,
     });
   }
 
