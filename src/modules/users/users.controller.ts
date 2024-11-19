@@ -10,7 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiJwtPayload, GetUser, LoggerApi } from 'src/common';
+import { ApiJwtPayload, GetUser, LoggerApi } from '@app/common';
 import { UpdateMeDto, UsersResponse } from './dto';
 import { UsersService } from './users.service';
 import { Roles } from '@app/common/decorators/roles.decorator';

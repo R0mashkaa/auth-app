@@ -1,8 +1,8 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { getConfig } from 'src/config';
-import { UsersRepository } from 'src/modules/repository';
+import { getConfig } from '@app/config';
+import { UsersRepository } from '@app/modules/repository';
 import { ApiJwtPayload } from '@app/common/decorators';
 
 @Injectable()

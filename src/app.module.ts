@@ -7,7 +7,6 @@ import { getConfig } from './config';
 
 // Modules
 import { ConfigModule } from '@nestjs/config';
-import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule, DrizzleModule, UsersModule } from './modules';
 
 @Module({
@@ -16,7 +15,6 @@ import { AuthModule, DrizzleModule, UsersModule } from './modules';
       isGlobal: true,
       load: [getConfig],
     }),
-    ScheduleModule.forRoot(),
     DrizzleModule,
     AuthModule,
     UsersModule,

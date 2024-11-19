@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiJwtPayload, GetUser, LoggerApi, Public } from 'src/common';
+import { ApiJwtPayload, GetUser, LoggerApi, Public } from '@app/common';
 import { AuthService } from './auth.service';
 import { AuthResponse, PasswordUpdate, SignInDto, SignUpDto } from './dto';
 import { UsersResponse } from '@app/modules';

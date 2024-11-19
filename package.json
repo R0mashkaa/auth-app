@@ -19,9 +19,8 @@
     "prepare": "husky",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-jest/dist/index.js node_modules/.bin/jest --runInBand",
-    "test:unit": "jest"
+    "test:cov": "jest --coverage --runInBand",
+    "test:unit": "jest --runInBand"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

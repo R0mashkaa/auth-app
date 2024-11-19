@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { LoggerServiceDecorator } from 'src/common';
+import { LoggerServiceDecorator } from '@app/common';
 import { AuthResponse, PasswordUpdate, SignInDto, SignUpDto } from './dto';
 import { UsersResponse } from 'src/modules/users';
 import { UsersRepository } from '@app/modules';
@@ -40,7 +40,6 @@ export class AuthService {
         access_token: this.jwtService.sign(payload),
       } as AuthResponse;
     } catch (error) {
-      console.error('Error sign in:', error);
       throw new BadRequestException(`[signIn-Auth] error: ${error.message}`);
     }
   }
@@ -64,7 +63,7 @@ export class AuthService {
         id: createdUser.id,
         firstName: createdUser.firstName,
         lastName: createdUser.lastName,
-        role: existsUser.role,
+        role: createdUser.role,
         email: createdUser.email,
       };
 

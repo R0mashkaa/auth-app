@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { LoggerServiceDecorator } from 'src/common';
+import { LoggerServiceDecorator } from '@app/common';
 import { CreateUserDto, UpdateMeDto, UsersResponse } from './dto';
 import { UsersRepository } from '../repository';
 import { RolesEnum } from './enums';

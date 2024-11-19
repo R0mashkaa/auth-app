@@ -1,5 +1,5 @@
 import type { Config } from 'drizzle-kit';
-import { getConfig } from 'src/config';
+import { getConfig } from '@app/config';
 
 export default {
   schema: 'src/schemas',

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { Expose } from 'class-transformer';
-import { UsersDto } from 'src/modules/users';
+import { UsersDto } from '@app/modules/users';
 
 export class AuthResponse extends UsersDto {
   @ApiProperty({

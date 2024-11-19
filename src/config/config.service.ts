@@ -1,4 +1,4 @@
-import { getSafeEnv } from 'src/common/utils';
+import { getSafeEnv } from '@app/common/utils';
 
 export const getConfig = () => {
   return {
