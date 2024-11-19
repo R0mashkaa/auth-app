@@ -5,7 +5,6 @@ import { DRIZZLE_ORM } from 'src/common/constants';
 import { eq } from 'drizzle-orm';
 import { CreateUserDto, UpdateMeDto } from '@app/modules/users';
 import { mapToUsersResponse } from '@app/modules/users/mappers';
-import { RolesEnum } from '@app/modules/users/enums';
 
 @Injectable()
 export class UsersRepository {

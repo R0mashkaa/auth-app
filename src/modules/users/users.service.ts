@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { LoggerServiceDecorator } from 'src/common';
 import { CreateUserDto, UpdateMeDto, UsersResponse } from './dto';
 import { UsersRepository } from '../repository';
-import { RolesEnum } from '@app/modules/users/enums';
+import { RolesEnum } from './enums';
 import { RedisService } from '@app/modules/redis';
 
 @Injectable()
